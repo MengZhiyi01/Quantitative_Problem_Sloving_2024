@@ -1,32 +1,30 @@
 ## This is just a test
-import os
-import sys
-from datetime import datetime, timedelta
-
-import pandas_datareader.data as web
 import pandas as pd
+import pandas_datareader.data as web
+from datetime import datetime, timedelta
+import os
 
-# Add src directory to the system path for importing utilities
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
-from src.utils import calculate_quarterly_inflation
+# Define the start and end dates for the last 4 quarters
+end_date = datetime.now()
+start_date = end_date - timedelta(days=365*4)
 
-def fetch_cpi_data():
-    end_date = datetime.today()
-    start_date = end_date - timedelta(days=365 * 2)
-    cpi_data = web.DataReader('CPIAUCSL', 'fred', start_date, end_date)
-    return cpi_data
+# Fetch the CPI data from the Federal Reserve Bank of St. Louis (FRED)
+cpi_data = web.DataReader('CPIAUCSL', 'fred', start_date, end_date)
 
-def main():
-    # Fetch CPI data
-    cpi_data = fetch_cpi_data()
+# Calculate the inflation rate for the last 4 quarters
+# Assuming the CPI data is monthly, we'll calculate the quarterly change
+quarters = cpi_data.resample('QE').last()
 
-    # Calculate quarterly inflation
-    quarterly_inflation = calculate_quarterly_inflation(cpi_data)
+# Calculate the percentage change from one quarter to the next
+inflation_rates = quarters.pct_change() * 100
 
-    # Report the last four quarters of inflation
-    last_four_quarters = quarterly_inflation.tail(4)
-    print("Last 4 Quarters of US Inflation (in percentage):")
-    print(last_four_quarters)
+# Print the last 4 quarters of inflation
+print(inflation_rates.tail(4))
 
-if __name__ == "__main__":
-    main()
+# Create the 'data' directory if it does not exist
+data_dir = '../data'
+if not os.path.exists(data_dir):
+    os.makedirs(data_dir)
+
+# Save the inflation rates to a CSV file
+inflation_rates.to_csv(f'{data_dir}/inflation_rates.csv')
