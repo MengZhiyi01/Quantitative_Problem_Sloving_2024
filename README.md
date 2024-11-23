@@ -3,6 +3,8 @@
 ## Introduction
 This is Homework 1 of the PHBS Quantitative Problem Solving 2024, undertaken by **Zhiyi_Meng**.
 
+[Github repository link](https://github.com/MengZhiyi01/Quantitative_Problem_Sloving_2024.git)
+
 ## Quick Start
 1. Python 3.10.13
 
